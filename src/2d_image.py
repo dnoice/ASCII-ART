@@ -90,7 +90,7 @@ def main():
     Main function to handle user input and generate ASCII art.
     """
     # File paths
-    source_filename = "windmill.jpg"
+    source_filename = "path_to_your_image"
     destination_filename = "./output.txt"
 
     # Load and process image
