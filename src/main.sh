@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# ASCII Banner
 echo "
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -20,13 +21,37 @@ echo "
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 The output will be printed to the console as well as saved in the directory from which the script is run.
-While specifying width of image, make sure the terminal you use can be zoomed out enough to view the text all at once.
-Ideal width is 150 for maximized window, however it may vary from system to system.
+While specifying the image width, ensure your terminal window is maximized to accommodate the output.
+Ideal width is 150 for maximized terminals, but this may vary depending on system settings.
 "
 
-echo "Type the address of image for which you want to generate ASCII-ART and hit enter"
-read location
-echo "
-Type in the width you want the image to be scaled to:"
-read x
-printf "$location\n$x" | python3 2d_image.py
+# Prompt for Image Location
+read -rp "Type the full path of the image for ASCII conversion: " location
+if [ -z "$location" ]; then
+    echo "❌ Error: No image path provided. Exiting..."
+    exit 1
+fi
+
+# Auto-detect terminal width or use a default
+default_width=$(tput cols 2>/dev/null || echo 150)
+
+# Prompt for Desired Width
+read -rp "Type the desired width for the ASCII art (recommended: ${default_width}): " width
+if [ -z "$width" ]; then
+    width=$default_width
+fi
+
+# Verify Width is a Positive Number
+if ! [[ "$width" =~ ^[0-9]+$ ]]; then
+    echo "❌ Error: Width must be a positive integer. Exiting..."
+    exit 1
+fi
+
+# Execute Python Script
+if [ -f "2d_image.py" ]; then
+    printf "$location\n$width" | python3 2d_image.py
+    echo "✅ ASCII art successfully generated!"
+else
+    echo "❌ Error: '2d_image.py' not found in the current directory."
+    exit 1
+fi
